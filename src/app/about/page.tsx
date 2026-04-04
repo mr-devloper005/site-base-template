@@ -9,8 +9,6 @@ import { SITE_CONFIG } from "@/lib/site-config";
 
 const highlights = [
   { label: "Creators onboarded", value: "12k+" },
-  { label: "Bookmarks shared", value: "180k" },
-  { label: "Listings published", value: "8.6k" },
 ];
 
 const values = [
