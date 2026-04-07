@@ -16,3 +16,4 @@ export const defaultAuthorProfile = {
   name: siteIdentity.name,
   avatar: '/placeholder.svg?height=80&width=80',
 } as const
+

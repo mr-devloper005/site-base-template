@@ -15,6 +15,10 @@ import { cn } from "@/lib/utils";
 import { ArticleComments } from "@/components/tasks/article-comments";
 import { SchemaJsonLd } from "@/components/seo/schema-jsonld";
 import { RichContent, formatRichHtml } from "@/components/shared/rich-content";
+import { getFactoryState } from "@/design/factory/get-factory-state";
+import { getProductKind } from "@/design/factory/get-product-kind";
+import { DirectoryTaskDetailPage } from "@/design/products/directory/task-detail-page";
+import { TASK_DETAIL_PAGE_OVERRIDE_ENABLED, TaskDetailPageOverride } from "@/overrides/task-detail-page";
 
 type PostContent = {
   category?: string;
@@ -120,6 +124,10 @@ const buildMapEmbedUrl = (
 };
 
 export async function TaskDetailPage({ task, slug }: { task: TaskKey; slug: string }) {
+  if (TASK_DETAIL_PAGE_OVERRIDE_ENABLED) {
+    return await TaskDetailPageOverride({ task, slug });
+  }
+
   const taskConfig = getTaskConfig(task);
   let post: SitePost | null = null;
   try {
@@ -216,6 +224,28 @@ export async function TaskDetailPage({ task, slug }: { task: TaskKey; slug: stri
     ],
   };
   const schemaPayload = articleSchema ? [articleSchema, breadcrumbSchema] : breadcrumbSchema;
+  const { recipe } = getFactoryState();
+  const productKind = getProductKind(recipe);
+
+  if (productKind === "directory" && (task === "listing" || task === "classified" || task === "profile")) {
+    return (
+      <div className="min-h-screen bg-[#f8fbff]">
+        <NavbarShell />
+        <DirectoryTaskDetailPage
+          task={task}
+          taskLabel={taskConfig?.label || task}
+          taskRoute={taskConfig?.route || "/"}
+          post={post}
+          description={description}
+          category={category}
+          images={images}
+          mapEmbedUrl={mapEmbedUrl}
+          related={related}
+        />
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
